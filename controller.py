@@ -37,9 +37,6 @@ CONTROL_BYTES = dict(
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# shut down wlan0 interface N seconds after startup (or last server interaction)
-WLAN_OFF_DELAY = 180
-
 
 class RFIDHandler(object):
     """
@@ -277,13 +274,13 @@ class RFIDHandler(object):
 
         # if enough time has elapsed, shut off the WiFi interface
         delta = (datetime.datetime.now() - self.startup).total_seconds()
-        if delta > WLAN_OFF_DELAY and not self.is_wlan_off:
+        if delta > settings.WLAN_OFF_DELAY and not self.is_wlan_off:
             logger.info("Shutting down WiFi")
             self.is_wlan_off = True
             subprocess.call(['sudo', 'ifdown', 'wlan0'])
 
         if int(delta) % 10 == 0 and not self.is_wlan_off:
-            logger.debug("Shutting down WiFi in (seconds):", WLAN_OFF_DELAY - delta)
+            logger.debug("Shutting down WiFi in (seconds):", settings.WLAN_OFF_DELAY - delta)
 
         # check if we have valid data
         if self.data[0] is not None:
