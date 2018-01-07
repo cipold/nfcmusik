@@ -4,3 +4,8 @@ DEFAULT_VOLUME = 70
 
 # shut down wlan0 interface N seconds after startup (or last server interaction)
 WLAN_OFF_DELAY = 180
+
+# control bytes for NFC payload
+CONTROL_BYTES = dict(
+    MUSIC_FILE='\x11',
+)

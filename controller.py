@@ -28,11 +28,6 @@ Autostart: 'crontab -e', then add line
 
 """
 
-# control bytes for NFC payload
-CONTROL_BYTES = dict(
-    MUSIC_FILE='\x11',
-)
-
 # global debug output flag
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -286,7 +281,7 @@ class RFIDHandler(object):
         if self.data[0] is not None:
             bin_data = "".join([chr(c) for c in self.data])
 
-            if bin_data[0] == CONTROL_BYTES['MUSIC_FILE']:
+            if bin_data[0] == settings.CONTROL_BYTES['MUSIC_FILE']:
 
                 if bin_data in self.music_files_dict:
                     file_name = self.music_files_dict[bin_data]
@@ -357,7 +352,7 @@ def music_file_hash(file_name):
     """
     m = hashlib.md5()
     m.update(file_name)
-    return CONTROL_BYTES['MUSIC_FILE'] + m.digest()[1:]
+    return settings.CONTROL_BYTES['MUSIC_FILE'] + m.digest()[1:]
 
 
 @app.route("/json/musicfiles")
@@ -408,7 +403,7 @@ def read_nfc():
         hex_data = binascii.b2a_hex(data)
 
         description = 'Unknown control byte or tag empty'
-        if data[0] == CONTROL_BYTES['MUSIC_FILE']:
+        if data[0] == settings.CONTROL_BYTES['MUSIC_FILE']:
             if data in music_files_dict:
                 description = 'Play music file ' + music_files_dict[data]
             else:
@@ -438,7 +433,7 @@ def write_nfc():
     # convert from hex to bytes
     data = binascii.a2b_hex(hex_data)
 
-    if data[0] == CONTROL_BYTES['MUSIC_FILE']:
+    if data[0] == settings.CONTROL_BYTES['MUSIC_FILE']:
         if data not in music_files_dict:
             return json.dumps(dict(message="Unknown hash value!"))
 
