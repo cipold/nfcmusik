@@ -24,8 +24,6 @@ Autostart: 'crontab -e', then add line
 
 """
 
-# global debug output flag
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -321,23 +319,18 @@ class RFIDHandler(object):
                     pygame.mixer.music.stop()
 
 
-#
-# Global objects
-#
+def main():
+    logging.basicConfig(level=logging.INFO)
 
-# global RFID handler instance
-rfid_handler = RFIDHandler()
+    # RFID handler instance
+    rfid_handler = RFIDHandler()
 
-# RFID handling process
-rfid_polling_process = Process(target=rfid_handler.poll_loop)
-
-#
-# End global objects
-#
-
-
-if __name__ == "__main__":
-    # start RFID polling
+    # start RFID handling process
+    rfid_polling_process = Process(target=rfid_handler.poll_loop)
     rfid_polling_process.start()
 
     web.run_server(rfid_handler)
+
+
+if __name__ == "__main__":
+    main()
