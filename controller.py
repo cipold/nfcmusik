@@ -1,8 +1,4 @@
-import binascii
 import datetime
-import glob
-import hashlib
-import json
 import logging
 import subprocess
 import time
@@ -10,11 +6,11 @@ from multiprocessing import Process, Lock, Manager
 from os import path
 
 import pygame
-from flask import Flask, render_template, request
 
 import RFID
 import settings
 import util
+import web
 
 """
 
@@ -329,142 +325,19 @@ class RFIDHandler(object):
 # Global objects
 #
 
-app = Flask(__name__)
-
-# global dictionary of music file hashes and names
-music_files_dict = dict()
-
 # global RFID handler instance
 rfid_handler = RFIDHandler()
 
 # RFID handling process
 rfid_polling_process = Process(target=rfid_handler.poll_loop)
 
-
 #
 # End global objects
 #
-
-
-def music_file_hash(file_name):
-    """
-    Get hash of music file name, replace first byte with a control byte for music playing.
-    """
-    m = hashlib.md5()
-    m.update(file_name)
-    return settings.CONTROL_BYTES['MUSIC_FILE'] + m.digest()[1:]
-
-
-@app.route("/json/musicfiles")
-def music_files():
-    """
-    Get a list of music files and file identifier hashes as JSON; also refresh
-    internal cache of music files and hashes.
-    """
-    global music_files_dict
-
-    file_paths = sorted(glob.glob(path.join(settings.MUSIC_ROOT, '*')))
-
-    out = []
-    music_files_dict = dict()
-    for file_path in file_paths:
-        file_name = path.split(file_path)[1]
-        file_hash = music_file_hash(file_name)
-        out.append(dict(name=file_name,
-                        hash=binascii.b2a_hex(file_hash)))
-        music_files_dict[file_hash] = file_name
-
-        # set music files dict in RFID handler
-        rfid_handler.set_music_files_dict(music_files_dict)
-
-    return json.dumps(out)
-
-
-@app.route("/json/readnfc")
-def read_nfc():
-    """
-    Get current status of NFC tag
-    """
-    global music_files_dict
-
-    # get current NFC uid and data
-
-    uid = rfid_handler.get_uid()
-    if uid is None:
-        hex_uid = "none"
-    else:
-        hex_uid = binascii.b2a_hex(uid)
-
-    data = rfid_handler.get_data()
-    if data is None:
-        hex_data = "none"
-        description = "No tag present"
-    else:
-        hex_data = binascii.b2a_hex(data)
-
-        description = 'Unknown control byte or tag empty'
-        if data[0] == settings.CONTROL_BYTES['MUSIC_FILE']:
-            if data in music_files_dict:
-                description = 'Play music file ' + music_files_dict[data]
-            else:
-                description = 'Play a music file not currently present on the device'
-
-    # output container
-    out = dict(uid=hex_uid,
-               data=hex_data,
-               description=description)
-
-    return json.dumps(out)
-
-
-@app.route("/actions/writenfc")
-def write_nfc():
-    """
-    Write data to NFC tag
-
-    Data is contained in get argument 'data'.
-    """
-    hex_data = request.args.get('data')
-
-    if hex_data is None:
-        logger.error("Error: no data argument given for writenfc endpoint")
-        return
-
-    # convert from hex to bytes
-    data = binascii.a2b_hex(hex_data)
-
-    if data[0] == settings.CONTROL_BYTES['MUSIC_FILE']:
-        if data not in music_files_dict:
-            return json.dumps(dict(message="Unknown hash value!"))
-
-        # write tag
-        success = rfid_handler.write(data)
-
-        if success:
-            file_name = music_files_dict[data]
-            return json.dumps(dict(message="Successfully wrote NFC tag for file: " + file_name))
-        else:
-            return json.dumps(dict(message="Error writing NFC tag data " + hex_data))
-
-    else:
-        return json.dumps(dict(message='Unknown control byte: ' + binascii.b2a_hex(data[0])))
-
-
-@app.route("/")
-def home():
-    # reset wlan shutdown counter when loading page
-    rfid_handler.reset_startup_timer()
-
-    return render_template("home.html")
 
 
 if __name__ == "__main__":
     # start RFID polling
     rfid_polling_process.start()
 
-    # initialize music files dict
-    music_files()
-
-    # run server
-    app.run(host=settings.SERVER_HOST_MASK,
-            threaded=True)
+    web.run_server(rfid_handler)
