@@ -1,3 +1,4 @@
+import argparse
 import datetime
 import logging
 import subprocess
@@ -319,8 +320,8 @@ class RFIDHandler(object):
                     pygame.mixer.music.stop()
 
 
-def main():
-    logging.basicConfig(level=logging.INFO)
+def main(args):
+    logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
 
     # RFID handler instance
     rfid_handler = RFIDHandler()
@@ -333,4 +334,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description='NFC Music Box Controller')
+    parser.add_argument('-v', '--verbose', action='store_true', help='verbose logging')
+
+    main(parser.parse_args())
