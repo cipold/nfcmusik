@@ -48,8 +48,8 @@ def music_files():
                         hash=binascii.b2a_hex(file_hash)))
         music_files_dict[file_hash] = file_name
 
-        # set music files dict in RFID handler
-        rfid_handler.set_music_files_dict(music_files_dict)
+    # set music files dict in RFID handler
+    rfid_handler.set_music_files_dict(music_files_dict)
 
     return json.dumps(out)
 
