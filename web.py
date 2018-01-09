@@ -132,10 +132,11 @@ def home():
     return render_template("home.html")
 
 
-def run_server(rfid_handler_):
+def run_server(rfid_handler_param):
+    global rfid_handler
+    rfid_handler = rfid_handler_param
+
     # initialize music files dict
     music_files()
 
-    global rfid_handler
-    rfid_handler = rfid_handler_
     app.run(host=settings.SERVER_HOST_MASK, threaded=True)
