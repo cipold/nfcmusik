@@ -270,7 +270,7 @@ class RFIDHandler(object):
             subprocess.call(['sudo', 'ifdown', 'wlan0'])
 
         if int(delta) % 10 == 0 and not self.is_wlan_off:
-            logger.debug("Shutting down WiFi in (seconds):", settings.WLAN_OFF_DELAY - delta)
+            logger.debug("Shutting down WiFi in (seconds): %.1f" % (settings.WLAN_OFF_DELAY - delta))
 
         # check if we have valid data
         if self.data[0] is not None:
