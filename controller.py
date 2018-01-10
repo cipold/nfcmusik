@@ -101,8 +101,11 @@ class RFIDHandler(object):
 
         if settings.START_SOUND:
             file_path = path.join(settings.MUSIC_ROOT, settings.START_SOUND)
-            pygame.mixer.music.load(file_path)
-            pygame.mixer.music.play()
+            try:
+                pygame.mixer.music.load(file_path)
+                pygame.mixer.music.play()
+            except pygame.error as e:
+                logger.error("Start sound could not be played: %s", e)
 
         while not self.do_stop:
             with self.mutex:
