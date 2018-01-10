@@ -99,6 +99,11 @@ class RFIDHandler(object):
         # set default volume
         util.set_volume(settings.DEFAULT_VOLUME)
 
+        if settings.START_SOUND:
+            file_path = path.join(settings.MUSIC_ROOT, settings.START_SOUND)
+            pygame.mixer.music.load(file_path)
+            pygame.mixer.music.play()
+
         while not self.do_stop:
             with self.mutex:
 
