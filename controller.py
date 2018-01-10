@@ -21,7 +21,7 @@ Reads and acts on NFC codes, supplies web interface for tag management.
 Web interface is at http://<raspi IP or host name>:5000
 
 Autostart: 'crontab -e', then add line
-@reboot cd <project directory> && python -u controller.py 2>&1 >> /home/pi/tmp/nfcmusik.log.txt &
+@reboot cd <project directory> && python3 -u controller.py 2>&1 >> /home/pi/tmp/nfcmusik.log.txt &
 
 """
 
@@ -179,7 +179,7 @@ class RFIDHandler(object):
                     err = False
                     for i in range(4):
                         page = self.page + i
-                        page_data = [ord(c) for c in data[4 * i: 4 * i + 4]] + [0] * 12
+                        page_data = [c for c in data[4 * i: 4 * i + 4]] + [0] * 12
 
                         # read data once (necessary for successful writing?)
                         err_read, _ = rdr.read(page)
@@ -217,7 +217,7 @@ class RFIDHandler(object):
         with self.mutex:
             data = list(self.data)
         if data[0] is not None:
-            return "".join([chr(c) for c in data])
+            return bytes(data)
         else:
             return None
 
@@ -228,7 +228,7 @@ class RFIDHandler(object):
         with self.mutex:
             uid = list(self.uid)
         if uid[0] is not None:
-            return "".join([chr(c) for c in uid])
+            return bytes(uid)
         else:
             return None
 
@@ -274,9 +274,9 @@ class RFIDHandler(object):
 
         # check if we have valid data
         if self.data[0] is not None:
-            bin_data = "".join([chr(c) for c in self.data])
+            bin_data = bytes(self.data)
 
-            if bin_data[0] == settings.CONTROL_BYTES['MUSIC_FILE']:
+            if bin_data[0:1] == settings.CONTROL_BYTES['MUSIC_FILE']:
 
                 if bin_data in self.music_files_dict:
                     file_name = self.music_files_dict[bin_data]

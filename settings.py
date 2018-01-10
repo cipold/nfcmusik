@@ -7,5 +7,5 @@ WLAN_OFF_DELAY = 180
 
 # control bytes for NFC payload
 CONTROL_BYTES = dict(
-    MUSIC_FILE='\x11',
+    MUSIC_FILE=b'\x11',
 )

@@ -25,7 +25,7 @@ def music_file_hash(file_name):
     Get hash of music file name, replace first byte with a control byte for music playing.
     """
     m = hashlib.md5()
-    m.update(file_name)
+    m.update(file_name.encode())
     return settings.CONTROL_BYTES['MUSIC_FILE'] + m.digest()[1:]
 
 
@@ -45,7 +45,7 @@ def music_files():
         file_name = path.split(file_path)[1]
         file_hash = music_file_hash(file_name)
         out.append(dict(name=file_name,
-                        hash=binascii.b2a_hex(file_hash)))
+                        hash=binascii.b2a_hex(file_hash).decode()))
         music_files_dict[file_hash] = file_name
 
     # set music files dict in RFID handler
@@ -67,17 +67,17 @@ def read_nfc():
     if uid is None:
         hex_uid = "none"
     else:
-        hex_uid = binascii.b2a_hex(uid)
+        hex_uid = binascii.b2a_hex(uid).decode()
 
     data = rfid_handler.get_data()
     if data is None:
         hex_data = "none"
         description = "No tag present"
     else:
-        hex_data = binascii.b2a_hex(data)
+        hex_data = binascii.b2a_hex(data).decode()
 
         description = 'Unknown control byte or tag empty'
-        if data[0] == settings.CONTROL_BYTES['MUSIC_FILE']:
+        if data[0:1] == settings.CONTROL_BYTES['MUSIC_FILE']:
             if data in music_files_dict:
                 description = 'Play music file ' + music_files_dict[data]
             else:
@@ -107,7 +107,7 @@ def write_nfc():
     # convert from hex to bytes
     data = binascii.a2b_hex(hex_data)
 
-    if data[0] == settings.CONTROL_BYTES['MUSIC_FILE']:
+    if data[0:1] == settings.CONTROL_BYTES['MUSIC_FILE']:
         if data not in music_files_dict:
             return json.dumps(dict(message="Unknown hash value!"))
 
@@ -121,7 +121,7 @@ def write_nfc():
             return json.dumps(dict(message="Error writing NFC tag data " + hex_data))
 
     else:
-        return json.dumps(dict(message='Unknown control byte: ' + binascii.b2a_hex(data[0])))
+        return json.dumps(dict(message='Unknown control byte: ' + binascii.b2a_hex(data[0:1])))
 
 
 @app.route("/")
