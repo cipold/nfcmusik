@@ -50,7 +50,7 @@ function pollNFC(){
         nfcStatus.empty();
 
         $('<p/>')
-            .text('NFC Tag Status: ' + data['description'] + ' (UID:' + data['uid'] + ', data: ' + data['data'] + ')')
+            .text('NFC Tag Status: ' + data['description'] + ' (UID: ' + data['uid'] + ', data: ' + data['data'] + ')')
             .appendTo(nfcStatus);
 
         // poll again in 1 sec
