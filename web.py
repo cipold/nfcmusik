@@ -49,7 +49,8 @@ def music_files():
         music_files_dict[file_hash] = file_name
 
     # set music files dict in RFID handler
-    rfid_handler.set_music_files_dict(music_files_dict)
+    if rfid_handler:
+        rfid_handler.set_music_files_dict(music_files_dict)
 
     return json.dumps(out)
 
@@ -59,6 +60,9 @@ def read_nfc():
     """
     Get current status of NFC tag
     """
+    if not rfid_handler:
+        return json.dumps(dict(uid=None, data=None, description="No RFID handler"))
+
     global music_files_dict
 
     # get current NFC uid and data
@@ -98,6 +102,9 @@ def write_nfc():
 
     Data is contained in get argument 'data'.
     """
+    if not rfid_handler:
+        return json.dumps(dict(message='No RFID handler'))
+
     hex_data = request.args.get('data')
 
     if hex_data is None:
@@ -127,7 +134,8 @@ def write_nfc():
 @app.route("/")
 def home():
     # reset wlan shutdown counter when loading page
-    rfid_handler.reset_startup_timer()
+    if rfid_handler:
+        rfid_handler.reset_startup_timer()
 
     return render_template("home.html")
 
@@ -140,3 +148,7 @@ def run_server(rfid_handler_param):
     music_files()
 
     app.run(host=settings.SERVER_HOST_MASK, threaded=True)
+
+
+if __name__ == "__main__":
+    run_server(None)
