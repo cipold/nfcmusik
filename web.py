@@ -100,32 +100,40 @@ def write_nfc():
     Data is contained in get argument 'data'.
     """
     if not rfid_handler:
-        return json.dumps(dict(message='No RFID handler'))
+        return json.dumps(dict(
+            success=False, message='No RFID handler'
+        ))
 
+    # acquire data in hex format
     hex_data = request.args.get('data')
-
     if hex_data is None:
-        logger.error("Error: no data argument given for writenfc endpoint")
-        return
+        return json.dumps(dict(
+            success=False, message='No data argument given for writenfc endpoint'
+        ))
 
     # convert from hex to bytes
     data = binascii.a2b_hex(hex_data)
 
-    if data[0:1] == settings.CONTROL_BYTES['MUSIC_FILE']:
-        if data not in music_files_dict:
-            return json.dumps(dict(message="Unknown hash value!"))
+    if data[0:1] != settings.CONTROL_BYTES['MUSIC_FILE']:
+        return json.dumps(dict(
+            success=False, message='Unknown control byte: ' + binascii.b2a_hex(data[0:1])
+        ))
 
-        # write tag
-        success = rfid_handler.write(data)
+    if data not in music_files_dict:
+        return json.dumps(dict(
+            success=False, message="Unknown hash value!"
+        ))
 
-        if success:
-            file_name = music_files_dict[data]
-            return json.dumps(dict(message="Successfully wrote NFC tag for file: " + file_name))
-        else:
-            return json.dumps(dict(message="Error writing NFC tag data " + hex_data))
+    # write tag
+    if not rfid_handler.write(data):
+        return json.dumps(dict(
+            success=False, message="Error writing NFC tag data " + hex_data
+        ))
 
-    else:
-        return json.dumps(dict(message='Unknown control byte: ' + binascii.b2a_hex(data[0:1])))
+    file_name = music_files_dict[data]
+    return json.dumps(dict(
+        success=True, message="Successfully wrote NFC tag for file: " + file_name
+    ))
 
 
 @app.route("/")

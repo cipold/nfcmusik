@@ -30,21 +30,44 @@ function refreshMusicFiles() {
 
 function writeNFC(data) {
     $.getJSON('actions/writenfc?data=' + data, function (ret) {
-        setStatus(ret.message);
+        var icon = $('#' + data + ' > .btn > .glyphicon').first();
+        var btn = $('#' + data + ' > .btn').first();
+
+        if (ret.success) {
+            // tag successfully written - give simple feedback to user as the music is about to start playing anyway
+            icon.removeClass('glyphicon-save');
+            icon.addClass('glyphicon-ok');
+            btn.removeClass('btn-primary');
+            btn.addClass('btn-success');
+
+            setTimeout(function () {
+                icon.removeClass('glyphicon-ok');
+                icon.addClass('glyphicon-save');
+                btn.removeClass('btn-success');
+                btn.addClass('btn-primary');
+            }, 3000);
+
+            console.info(ret.message);
+        } else {
+            // there was an issue writing the tag - provide status message to user
+            icon.removeClass('glyphicon-save');
+            icon.addClass('glyphicon-exclamation-sign');
+            btn.removeClass('btn-primary');
+            btn.addClass('btn-danger');
+
+            setTimeout(function () {
+                icon.removeClass('glyphicon-exclamation-sign');
+                icon.addClass('glyphicon-save');
+                btn.removeClass('btn-danger');
+                btn.addClass('btn-primary');
+            }, 3000);
+
+            $('#modal-text').text(ret.message);
+            $('#modal-dialog').modal('show');
+            console.error(ret.message);
+        }
     });
 }
-
-
-function setStatus(status) {
-    var statusBox = $('#statusBox');
-
-    statusBox.empty();
-
-    $('<p/>')
-        .text('Status: ' + status)
-        .appendTo(statusBox);
-}
-
 
 function pollNFC() {
     $.getJSON('json/readnfc', function (data) {
@@ -64,6 +87,5 @@ function pollNFC() {
 
 function initialize() {
     refreshMusicFiles();
-    setStatus("Ready!");
     pollNFC();
 }
