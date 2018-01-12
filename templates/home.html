@@ -47,9 +47,9 @@
   {% endwith %}
   {% block body %}{% endblock %}
 
-  <div class="alert alert-info" role="alert" id="wlanStatusAlert">
+  <div class="alert alert-info" role="alert" id="wlanStatusAlert" style="display: none;">
     <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-    WiFi connection is shut off 3 minutes after startup, refresh this page to reset shutdown timer.
+    WiFi connection is shut off in <span id="wlanTimeout">?</span> seconds, refresh this page to reset shutdown timer.
   </div>
 
   <div class="panel panel-default panel-primary">

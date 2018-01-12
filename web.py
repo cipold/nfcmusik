@@ -96,6 +96,16 @@ def read_nfc():
     return json.dumps(out)
 
 
+@app.route("/json/wlantimeout")
+def wlan_timeout():
+    """
+    Get time left until WLAN is turned off
+    """
+    return json.dumps(dict(
+        timeout=rfid_handler.get_wlan_time_left() if rfid_handler else 0
+    ))
+
+
 @app.route("/actions/writenfc")
 def write_nfc():
     """

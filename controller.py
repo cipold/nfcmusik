@@ -267,6 +267,13 @@ class RFIDHandler(object):
         """
         self.reset_startup.value = 1
 
+    def get_wlan_time_left(self):
+        """
+        Get the time left in seconds until WLAN is turned off
+        """
+        delta = (datetime.datetime.now() - self.startup).total_seconds()
+        return max(int(settings.WLAN_OFF_DELAY - delta), 0) if not self.is_wlan_off else 0
+
     def stop_polling(self):
         """
         Stop polling loop

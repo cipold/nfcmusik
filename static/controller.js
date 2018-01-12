@@ -119,7 +119,20 @@ function pollNFC() {
     });
 }
 
+function pollWlanTimeout() {
+    $.getJSON('json/wlantimeout', function (data) {
+        var timeout = data['timeout'];
+        $('#wlanTimeout').text(timeout);
+        if (timeout > 0) {
+            $('#wlanStatusAlert').show();
+        }
+    });
+}
+
 function initialize() {
     refreshMusicFiles();
     pollNFC();
+
+    pollWlanTimeout();
+    setInterval(pollWlanTimeout, 1000);
 }
