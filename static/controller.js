@@ -12,7 +12,6 @@ function refreshMusicFiles() {
                 .html('<span class="glyphicon glyphicon-music" aria-hidden="true"></span> ' + f.name + '<br>')
                 .appendTo(ul);
 
-
             $('<button/>')
                 .attr('type', 'button')
                 .addClass('btn btn-primary')
@@ -35,7 +34,6 @@ function refreshMusicFiles() {
         $('#musicFiles').html(ul);
     });
 }
-
 
 function writeNFC(data) {
     $.getJSON('actions/writenfc?data=' + data, function (ret) {
