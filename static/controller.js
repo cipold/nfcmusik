@@ -1,11 +1,11 @@
 // reload list of music files and render it
 function refreshMusicFiles() {
-    $.getJSON('json/musicfiles', function(data) {
+    $.getJSON('json/musicfiles', function (data) {
         var fileList = $("#musicFiles");
 
         fileList.empty();
 
-        $.each(data, function(i, f) {
+        $.each(data, function (i, f) {
             var li = $('<li/>')
                 .attr('id', f.hash)
                 .addClass('musicFileItem')
@@ -15,17 +15,19 @@ function refreshMusicFiles() {
             var href = $('<button/>')
                 .attr('type', 'button')
                 .addClass("btn btn-default")
-                .click(function() { writeNFC(f.hash); })
+                .click(function () {
+                    writeNFC(f.hash);
+                })
                 .text('write to tag')
                 .appendTo(li);
-                        
+
         });
     });
 }
 
 
 function writeNFC(data) {
-    $.getJSON('actions/writenfc?data=' + data, function(ret) {
+    $.getJSON('actions/writenfc?data=' + data, function (ret) {
         setStatus(ret.message);
     });
 }
@@ -33,7 +35,7 @@ function writeNFC(data) {
 
 function setStatus(status) {
     var statusBox = $('#statusBox');
-    
+
     statusBox.empty();
 
     $('<p/>')
@@ -42,8 +44,8 @@ function setStatus(status) {
 }
 
 
-function pollNFC(){
-    $.getJSON('json/readnfc', function(data) {
+function pollNFC() {
+    $.getJSON('json/readnfc', function (data) {
 
         var nfcStatus = $('#nfcStatusBox');
 
