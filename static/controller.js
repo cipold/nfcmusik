@@ -1,27 +1,29 @@
 // reload list of music files and render it
 function refreshMusicFiles() {
     $.getJSON('json/musicfiles', function (data) {
-        var fileList = $("#musicFiles");
-
-        fileList.empty();
+        var ul = $('<ul/>')
+            .addClass('list-group');
 
         $.each(data, function (i, f) {
             var li = $('<li/>')
                 .attr('id', f.hash)
-                .addClass('musicFileItem')
-                .text(f.name + '   ')
-                .appendTo(fileList);
+                .addClass('music-file')
+                .addClass('list-group-item clearfix')
+                .html('<span class="glyphicon glyphicon-music" aria-hidden="true"></span> ' + f.name + '<br>')
+                .appendTo(ul);
 
-            var href = $('<button/>')
+
+            $('<button/>')
                 .attr('type', 'button')
-                .addClass("btn btn-default")
+                .addClass("btn btn-primary")
                 .click(function () {
                     writeNFC(f.hash);
                 })
-                .text('write to tag')
+                .html('<span class="glyphicon glyphicon-save" aria-hidden="true"></span> Write')
                 .appendTo(li);
-
         });
+
+        $("#musicFiles").html(ul);
     });
 }
 

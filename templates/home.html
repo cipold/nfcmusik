@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>nfcmusik</title>
+  <title>NFC Musik</title>
 
   <link rel=stylesheet type=text/css
         href="{{ url_for('static', filename='bootstrap-3.3.7-dist/css/bootstrap.min.css') }}">
@@ -13,20 +13,43 @@
 
 </head>
 <body>
-<div class="container">
-  <h1>Welcome to <b>nfcmusik!</b></h1>
-  <p>WiFi connection is shut off 3 minutes after startup, refresh this page to reset shutdown timer.</p>
-</div>
-
-<div class="container" id="statusBox">
-</div>
-
-<div class="container" id="nfcStatusBox">
-</div>
 
 <div class="container">
-  <h2>Available music files</h2>
-  <ul id=musicFiles></ul>
+  <div class="header clearfix">
+    <h3 class="text-muted">NFC Musik</h3>
+  </div>
+
+  <div class="alert alert-info" role="alert" id="wlanStatusAlert">
+    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+    WiFi connection is shut off 3 minutes after startup, refresh this page to reset shutdown timer.
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Status</h3>
+    </div>
+    <div class="panel-body" id="statusBox">
+      <div class="loadersmall"></div>
+    </div>
+  </div>
+
+  <div class="panel panel-default panel-primary">
+    <div class="panel-heading">
+      <h3 class="panel-title">NFC Tag Status</h3>
+    </div>
+    <div class="panel-body" id="nfcStatusBox">
+      <div class="loadersmall"></div>
+    </div>
+  </div>
+
+  <div class="row container">
+    <h3>Available files</h3>
+    <div id="musicFiles"></div>
+  </div>
+
+  <footer class="footer">
+    <p><a href="https://github.com/cipold/nfcmusik">https://github.com/cipold/nfcmusik</a></p>
+  </footer>
 </div>
 
 <script src="{{ url_for('static', filename='jquery-3.1.0.min.js') }}"></script>
