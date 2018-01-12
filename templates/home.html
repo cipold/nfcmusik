@@ -30,8 +30,15 @@
   </div>
 </div>
 
+<form id="form" method="post" enctype="multipart/form-data" style="display: none;">
+  <input type="file" name="file" id="file" accept="audio/*" onchange="submitUpload()">
+</form>
+
 <div class="container">
   <div class="header clearfix">
+    <button class="btn btn-primary pull-right" onclick="selectUploadFile()">
+      <span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Upload
+    </button>
     <h3 class="text-muted">NFC Musik</h3>
   </div>
 
@@ -66,15 +73,6 @@
     <div id="musicFiles">
       <div class="loadersmall"></div>
     </div>
-  </div>
-
-  <div class="row container">
-    <h3>Upload</h3>
-    <form method="post" enctype="multipart/form-data">
-      <input type="file" name="file">
-      <p class="help-block">Select a mp3 file and press "Upload".</p>
-      <input type="submit" value="Upload" class="btn btn-default btn-primary">
-    </form>
   </div>
 
   <footer class="footer">

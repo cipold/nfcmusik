@@ -134,6 +134,14 @@ function pollWlanTimeout() {
     });
 }
 
+function selectUploadFile() {
+    document.getElementById("file").click();
+}
+
+function submitUpload() {
+    $("#form").submit();
+}
+
 function initialize() {
     // fill music file list
     refreshMusicFiles();
