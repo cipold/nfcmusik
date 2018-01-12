@@ -93,9 +93,6 @@ class RFIDHandler(object):
         Poll for presence of tag, read data, until stop() is called.
         """
 
-        # initialize music mixer
-        pygame.mixer.init()
-
         # set default volume
         util.set_volume(settings.DEFAULT_VOLUME)
 
@@ -103,6 +100,9 @@ class RFIDHandler(object):
             # play start sound completely before continuing
             file_path = path.join(settings.MUSIC_ROOT, settings.START_SOUND)
             try:
+                # initialize music mixer for every playback to avoid hissing noise
+                pygame.mixer.init()
+
                 # load and play start sound
                 pygame.mixer.music.load(file_path)
                 pygame.mixer.music.play()
@@ -115,6 +115,8 @@ class RFIDHandler(object):
                     time.sleep(0.2)
             except pygame.error as e:
                 logger.error("Start sound could not be played: %s", e)
+            finally:
+                pygame.mixer.quit()
 
         while not self.do_stop:
             with self.mutex:
@@ -312,8 +314,18 @@ class RFIDHandler(object):
                             # play music file
                             self.current_music = file_name
                             self.previous_music = file_name
-                            pygame.mixer.music.load(file_path)
-                            pygame.mixer.music.play()
+
+                            try:
+                                # initialize music mixer for every playback to avoid hissing noise
+                                pygame.mixer.init()
+
+                                # load and play start sound
+                                pygame.mixer.music.load(file_path)
+                                pygame.mixer.music.play()
+                            except pygame.error as e:
+                                logger.error('Audio file "%s" could not be played: %s', file_name, e)
+                            finally:
+                                pygame.mixer.quit()
 
                         else:
                             if not path.exists(file_path):
@@ -335,8 +347,13 @@ class RFIDHandler(object):
             if self.stop_count >= self.stop_music_on_stop_count:
                 self.current_music = None
 
-                if pygame.mixer.music.get_busy():
-                    pygame.mixer.music.stop()
+                # check if music is playing
+                if pygame.mixer.get_init():
+                    if pygame.mixer.music.get_busy():
+                        # stop music
+                        pygame.mixer.music.stop()
+                    # quit pygame mixer to avoid hissing noise
+                    pygame.mixer.quit()
 
 
 def main(args):
