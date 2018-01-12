@@ -5,8 +5,7 @@ import json
 import logging
 import os
 
-from flask import Flask
-from flask import render_template, request
+from flask import Flask, render_template, request
 
 import settings
 
@@ -88,9 +87,7 @@ def read_nfc():
                 description = 'Play a music file not currently present on the device'
 
     # output container
-    out = dict(uid=hex_uid,
-               data=hex_data,
-               description=description)
+    out = dict(uid=hex_uid, data=hex_data, description=description)
 
     return json.dumps(out)
 
