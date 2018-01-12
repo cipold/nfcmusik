@@ -3,10 +3,10 @@
 import argparse
 import datetime
 import logging
+import os
 import subprocess
 import time
 from multiprocessing import Process, Lock, Manager
-from os import path
 
 import pygame
 
@@ -98,7 +98,7 @@ class RFIDHandler(object):
 
         if settings.START_SOUND:
             # play start sound completely before continuing
-            file_path = path.join(settings.MUSIC_ROOT, settings.START_SOUND)
+            file_path = os.path.join(settings.MUSIC_ROOT, settings.START_SOUND)
             try:
                 # initialize music mixer for every playback to avoid hissing noise
                 pygame.mixer.init()
@@ -301,13 +301,13 @@ class RFIDHandler(object):
 
                 if bin_data in self.music_files_dict:
                     file_name = self.music_files_dict[bin_data]
-                    file_path = path.join(settings.MUSIC_ROOT, file_name)
+                    file_path = os.path.join(settings.MUSIC_ROOT, file_name)
 
                     if file_name != self.current_music:
 
                         # only replay same music file if we saw at least N periods
                         # of no token
-                        if path.exists(file_path) and (
+                        if os.path.exists(file_path) and (
                                 file_name != self.previous_music or self.stop_count >= self.replay_on_stop_count):
                             logger.info("RFIDHandler action: Playing music file " + file_path)
 
@@ -328,7 +328,7 @@ class RFIDHandler(object):
                                 pygame.mixer.quit()
 
                         else:
-                            if not path.exists(file_path):
+                            if not os.path.exists(file_path):
                                 logger.error("RFIDHandler action: File not found " + file_path)
 
                     # token seen - reset stop counter

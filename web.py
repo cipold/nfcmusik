@@ -3,7 +3,7 @@ import glob
 import hashlib
 import json
 import logging
-from os import path
+import os
 
 from flask import Flask
 from flask import render_template, request
@@ -37,12 +37,12 @@ def music_files():
     """
     global music_files_dict
 
-    file_paths = sorted(glob.glob(path.join(settings.MUSIC_ROOT, '*')))
+    file_paths = sorted(glob.glob(os.path.join(settings.MUSIC_ROOT, '*')))
 
     out = []
     music_files_dict = dict()
     for file_path in file_paths:
-        file_name = path.split(file_path)[1]
+        file_name = os.path.split(file_path)[1]
         file_hash = music_file_hash(file_name)
         out.append(dict(name=file_name,
                         hash=binascii.b2a_hex(file_hash).decode()))
