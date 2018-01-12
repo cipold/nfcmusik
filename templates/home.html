@@ -39,6 +39,9 @@
         <button class="btn btn-primary pull-right" onclick="selectUploadFile()">
             <span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Upload
         </button>
+        <button id="wlanStatus" class="btn btn-default pull-right" onclick="location.reload()" style="display: none">
+            <span class="glyphicon glyphicon-signal" aria-hidden="true"></span> WLAN: <span id="wlanTimeout">?</span>s
+        </button>
         <h3 class="text-muted">NFC Musik</h3>
     </div>
 
@@ -53,12 +56,6 @@
     {% endif %}
     {% endwith %}
     {% block body %}{% endblock %}
-
-    <div class="alert alert-info" role="alert" id="wlanStatusAlert" style="display: none;">
-        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-        WiFi connection is shut off in <span id="wlanTimeout">?</span> seconds, refresh this page to reset shutdown
-        timer.
-    </div>
 
     <div class="panel panel-default panel-primary">
         <div class="panel-heading">

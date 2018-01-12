@@ -129,7 +129,9 @@ function pollWlanTimeout() {
         var timeout = data['timeout'];
         $('#wlanTimeout').text(timeout);
         if (timeout > 0) {
-            $('#wlanStatusAlert').show();
+            $('#wlanStatus').show();
+        } else {
+            $('#wlanStatus').hide();
         }
     });
 }

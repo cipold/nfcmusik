@@ -20,6 +20,10 @@ body {
     line-height: 40px;
 }
 
+.header > .btn {
+    margin-left: 10px;
+}
+
 .footer {
     margin-top: 20px;
     padding-top: 19px;
