@@ -100,10 +100,19 @@ class RFIDHandler(object):
         util.set_volume(settings.DEFAULT_VOLUME)
 
         if settings.START_SOUND:
+            # play start sound completely before continuing
             file_path = path.join(settings.MUSIC_ROOT, settings.START_SOUND)
             try:
+                # load and play start sound
                 pygame.mixer.music.load(file_path)
                 pygame.mixer.music.play()
+
+                # wait half a second otherwise get_busy returns false
+                time.sleep(0.5)
+
+                # wait until the start sound has finished playing
+                while pygame.mixer.get_busy():
+                    time.sleep(0.2)
             except pygame.error as e:
                 logger.error("Start sound could not be played: %s", e)
 
