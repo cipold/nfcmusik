@@ -60,3 +60,8 @@ function pollNFC() {
     });
 }
 
+function initialize() {
+    refreshMusicFiles();
+    setStatus("Ready!");
+    pollNFC();
+}
