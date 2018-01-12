@@ -15,7 +15,7 @@ function refreshMusicFiles() {
 
             $('<button/>')
                 .attr('type', 'button')
-                .addClass("btn btn-primary")
+                .addClass('btn btn-primary')
                 .click(function () {
                     writeNFC(f.hash);
                 })
@@ -23,7 +23,7 @@ function refreshMusicFiles() {
                 .appendTo(li);
         });
 
-        $("#musicFiles").html(ul);
+        $('#musicFiles').html(ul);
     });
 }
 
