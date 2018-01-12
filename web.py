@@ -5,7 +5,8 @@ import json
 import logging
 import os
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, flash
+from werkzeug.utils import secure_filename
 
 import settings
 
@@ -42,10 +43,13 @@ def music_files():
     music_files_dict = dict()
     for file_path in file_paths:
         file_name = os.path.split(file_path)[1]
-        file_hash = music_file_hash(file_name)
-        out.append(dict(name=file_name,
-                        hash=binascii.b2a_hex(file_hash).decode()))
-        music_files_dict[file_hash] = file_name
+
+        _, file_extension = os.path.splitext(file_name)
+        if file_extension in settings.ALLOWED_EXTENSIONS:
+            file_hash = music_file_hash(file_name)
+            out.append(dict(name=file_name,
+                            hash=binascii.b2a_hex(file_hash).decode()))
+            music_files_dict[file_hash] = file_name
 
     # set music files dict in RFID handler
     if rfid_handler:
@@ -136,8 +140,31 @@ def write_nfc():
     ))
 
 
-@app.route("/")
+def handle_file_upload(files):
+    if 'file' not in files:
+        flash('No file uploaded', 'danger')
+        return
+
+    file = files['file']
+    if not file or file.filename == '':
+        flash('No file selected', 'danger')
+        return
+
+    _, file_extension = os.path.splitext(file.filename)
+    if file_extension in settings.ALLOWED_EXTENSIONS:
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        flash('File "%s" uploaded' % filename, 'success')
+    else:
+        flash('Invalid file type', 'danger')
+
+
+@app.route("/", methods=['GET', 'POST'])
 def home():
+    if request.method == 'POST':
+        handle_file_upload(request.files)
+        return redirect(request.url)
+
     # reset wlan shutdown counter when loading page
     if rfid_handler:
         rfid_handler.reset_startup_timer()
@@ -152,6 +179,8 @@ def run_server(rfid_handler_param):
     # initialize music files dict
     music_files()
 
+    app.secret_key = settings.SERVER_SECRET
+    app.config['UPLOAD_FOLDER'] = settings.MUSIC_ROOT
     app.run(host=settings.SERVER_HOST_MASK, threaded=True)
 
 
