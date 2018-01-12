@@ -75,3 +75,8 @@ body {
     margin-top: 15px;
     margin-right: 15px;
 }
+
+#connectionLost {
+    margin-left: 10px;
+    padding-top: 0.5em;
+}

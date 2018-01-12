@@ -121,6 +121,9 @@ function deleteFile(name, data) {
 function pollNFC() {
     $.getJSON('json/readnfc', function (data) {
         $('#nfcStatusBox').html('<span title="UID: ' + data['uid'] + ', data: ' + data['data'] + '">' + data['description'] + '</span>');
+        $('#connectionLost').hide();
+    }).fail(function () {
+        $('#connectionLost').show();
     });
 }
 

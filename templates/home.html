@@ -42,7 +42,12 @@
         <button id="wlanStatus" class="btn btn-default pull-right" onclick="location.reload()" style="display: none">
             <span class="glyphicon glyphicon-signal" aria-hidden="true"></span> WLAN: <span id="wlanTimeout">?</span>s
         </button>
-        <h3 class="text-muted">NFC Musik</h3>
+        <h3 class="text-muted">
+            NFC Musik
+            <span class="label label-danger" id="connectionLost" style="display: none;">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            </span>
+        </h3>
     </div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
