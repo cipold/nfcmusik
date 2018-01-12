@@ -29,7 +29,7 @@ def music_file_hash(file_name):
     return settings.CONTROL_BYTES['MUSIC_FILE'] + m.digest()[1:]
 
 
-@app.route("/json/musicfiles")
+@app.route('/json/musicfiles')
 def music_files():
     """
     Get a list of music files and file identifier hashes as JSON; also refresh
@@ -58,13 +58,13 @@ def music_files():
     return json.dumps(out)
 
 
-@app.route("/json/readnfc")
+@app.route('/json/readnfc')
 def read_nfc():
     """
     Get current status of NFC tag
     """
     if not rfid_handler:
-        return json.dumps(dict(uid=None, data=None, description="No RFID handler"))
+        return json.dumps(dict(uid=None, data=None, description='No RFID handler'))
 
     global music_files_dict
 
@@ -72,14 +72,14 @@ def read_nfc():
 
     uid = rfid_handler.get_uid()
     if uid is None:
-        hex_uid = "none"
+        hex_uid = 'none'
     else:
         hex_uid = binascii.b2a_hex(uid).decode()
 
     data = rfid_handler.get_data()
     if data is None:
-        hex_data = "none"
-        description = "No tag present"
+        hex_data = 'none'
+        description = 'No tag present'
     else:
         hex_data = binascii.b2a_hex(data).decode()
 
@@ -96,7 +96,7 @@ def read_nfc():
     return json.dumps(out)
 
 
-@app.route("/json/wlantimeout")
+@app.route('/json/wlantimeout')
 def wlan_timeout():
     """
     Get time left until WLAN is turned off
@@ -106,7 +106,7 @@ def wlan_timeout():
     ))
 
 
-@app.route("/actions/writenfc")
+@app.route('/actions/writenfc')
 def write_nfc():
     """
     Write data to NFC tag
@@ -135,22 +135,22 @@ def write_nfc():
 
     if data not in music_files_dict:
         return json.dumps(dict(
-            success=False, message="Unknown hash value!"
+            success=False, message='Unknown hash value!'
         ))
 
     # write tag
     if not rfid_handler.write(data):
         return json.dumps(dict(
-            success=False, message="Error writing NFC tag data " + hex_data
+            success=False, message='Error writing NFC tag data ' + hex_data
         ))
 
     file_name = music_files_dict[data]
     return json.dumps(dict(
-        success=True, message="Successfully wrote NFC tag for file: " + file_name
+        success=True, message='Successfully wrote NFC tag for file: ' + file_name
     ))
 
 
-@app.route("/actions/deletefile")
+@app.route('/actions/deletefile')
 def delete_file():
     """
     Delete file
@@ -168,14 +168,14 @@ def delete_file():
     data = binascii.a2b_hex(hex_data)
 
     if data not in music_files_dict:
-        return json.dumps(dict(success=False, message="Unknown hash value!"))
+        return json.dumps(dict(success=False, message='Unknown hash value!'))
 
     file_name = music_files_dict[data]
 
     try:
         os.remove(os.path.join(settings.MUSIC_ROOT, file_name))
     except OSError as e:
-        return json.dumps(dict(success=False, message="Could not delete file: %s" % e))
+        return json.dumps(dict(success=False, message='Could not delete file: %s' % e))
 
     return json.dumps(dict(success=True, message='The file "%s" was deleted' % file_name))
 
@@ -199,7 +199,7 @@ def handle_file_upload(files):
         flash('Invalid file type', 'danger')
 
 
-@app.route("/", methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def home():
     if request.method == 'POST':
         handle_file_upload(request.files)
@@ -209,7 +209,7 @@ def home():
     if rfid_handler:
         rfid_handler.reset_startup_timer()
 
-    return render_template("home.html")
+    return render_template('home.html')
 
 
 def run_server(rfid_handler_param):
@@ -224,5 +224,5 @@ def run_server(rfid_handler_param):
     app.run(host=settings.SERVER_HOST_MASK, threaded=True)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     run_server(None)

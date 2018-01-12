@@ -114,7 +114,7 @@ class RFIDHandler(object):
                 while pygame.mixer.get_busy():
                     time.sleep(0.2)
             except pygame.error as e:
-                logger.error("Start sound could not be played: %s", e)
+                logger.error('Start sound could not be played: %s', e)
             finally:
                 pygame.mixer.quit()
 
@@ -133,19 +133,19 @@ class RFIDHandler(object):
                 err, _ = rdr.request()
 
                 if not err:
-                    logger.debug("RFIDHandler poll_loop: Tag is present")
+                    logger.debug('RFIDHandler poll_loop: Tag is present')
 
                     # tag is present, get UID
                     err, uid = rdr.anticoll()
 
                     if not err:
-                        logger.debug("RFIDHandler poll_loop: Read UID: " + str(uid))
+                        logger.debug('RFIDHandler poll_loop: Read UID: ' + str(uid))
 
                         # read data
                         err, data = rdr.read(self.page)
 
                         if not err:
-                            logger.debug("RFIDHandler poll_loop: Read tag data: " + str(data))
+                            logger.debug('RFIDHandler poll_loop: Read tag data: ' + str(data))
 
                             # all good, store data to shared mem
                             for i in range(5):
@@ -154,10 +154,10 @@ class RFIDHandler(object):
                                 self.data[i] = data[i]
 
                         else:
-                            logger.error("RFIDHandler poll_loop: Error returned from read()")
+                            logger.error('RFIDHandler poll_loop: Error returned from read()')
 
                     else:
-                        logger.error("RFIDHandler poll_loop: Error returned from anticoll()")
+                        logger.error('RFIDHandler poll_loop: Error returned from anticoll()')
 
                 # clean up
                 rdr.cleanup()
@@ -174,7 +174,7 @@ class RFIDHandler(object):
         """
 
         if len(data) != 16:
-            logger.warning("Illegal data length, expected 16, got " + str(len(data)))
+            logger.warning('Illegal data length, expected 16, got ' + str(len(data)))
             return False
 
         with self.mutex:
@@ -187,13 +187,13 @@ class RFIDHandler(object):
             err, _ = rdr.request()
 
             if not err:
-                logger.debug("RFIDHandler write: Tag is present")
+                logger.debug('RFIDHandler write: Tag is present')
 
                 # tag is present, get UID
                 err, uid = rdr.anticoll()
 
                 if not err:
-                    logger.debug("RFIDHandler write: Read UID: " + str(uid))
+                    logger.debug('RFIDHandler write: Read UID: ' + str(uid))
 
                     # write data: RFID lib writes 16 bytes at a time, but for NTAG213
                     # only the first four are actually written
@@ -206,25 +206,25 @@ class RFIDHandler(object):
                         err_read, _ = rdr.read(page)
 
                         if err:
-                            logger.error("Error signaled on reading page {:d} before writing".format(page))
+                            logger.error('Error signaled on reading page {:d} before writing'.format(page))
 
                         # write data
                         err |= rdr.write(page, page_data)
 
                         if err:
                             logger.error(
-                                "Error signaled on writing page {:d} with data {:s}".format(page, str(page_data)))
+                                'Error signaled on writing page {:d} with data {:s}'.format(page, str(page_data)))
 
                     if not err:
-                        logger.info("RFIDHandler write: successfully wrote tag data")
+                        logger.info('RFIDHandler write: successfully wrote tag data')
 
                         success = True
 
                     else:
-                        logger.error("RFIDHandler write: Error returned from write()")
+                        logger.error('RFIDHandler write: Error returned from write()')
 
                 else:
-                    logger.error("RFIDHandler write: Error returned from anticoll()")
+                    logger.error('RFIDHandler write: Error returned from anticoll()')
 
             # clean up
             rdr.cleanup()
@@ -293,12 +293,12 @@ class RFIDHandler(object):
         # if enough time has elapsed, shut off the WiFi interface
         delta = (datetime.datetime.now() - self.startup).total_seconds()
         if delta > settings.WLAN_OFF_DELAY and not self.is_wlan_off:
-            logger.info("Shutting down WiFi")
+            logger.info('Shutting down WiFi')
             self.is_wlan_off = True
             subprocess.call(['sudo', 'ifdown', 'wlan0'])
 
         if int(delta) % 10 == 0 and not self.is_wlan_off:
-            logger.debug("Shutting down WiFi in (seconds): %.1f" % (settings.WLAN_OFF_DELAY - delta))
+            logger.debug('Shutting down WiFi in (seconds): %.1f' % (settings.WLAN_OFF_DELAY - delta))
 
         # check if we have valid data
         if self.data[0] is not None:
@@ -316,7 +316,7 @@ class RFIDHandler(object):
                         # of no token
                         if os.path.exists(file_path) and (
                                 file_name != self.previous_music or self.stop_count >= self.replay_on_stop_count):
-                            logger.info("RFIDHandler action: Playing music file " + file_path)
+                            logger.info('RFIDHandler action: Playing music file ' + file_path)
 
                             # play music file
                             self.current_music = file_name
@@ -336,19 +336,19 @@ class RFIDHandler(object):
 
                         else:
                             if not os.path.exists(file_path):
-                                logger.error("RFIDHandler action: File not found " + file_path)
+                                logger.error('RFIDHandler action: File not found ' + file_path)
 
                     # token seen - reset stop counter
                     self.stop_count = 0
 
                 else:
-                    logger.warning("RFIDHandler: got music file control byte but unknown file hash")
+                    logger.warning('RFIDHandler: got music file control byte but unknown file hash')
             else:
-                logger.warning("RFIDHandler action: Unknown control byte")
+                logger.warning('RFIDHandler action: Unknown control byte')
         else:
             self.stop_count += 1
 
-            logger.debug("Resetting action status, stop count " + str(self.stop_count))
+            logger.debug('Resetting action status, stop count ' + str(self.stop_count))
 
             # only stop after token absence for at least N times
             if self.stop_count >= self.stop_music_on_stop_count:
@@ -376,7 +376,7 @@ def main(args):
     web.run_server(rfid_handler)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='NFC Music Box Controller')
     parser.add_argument('-v', '--verbose', action='store_true', help='verbose logging')
 
