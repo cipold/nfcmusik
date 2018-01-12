@@ -71,14 +71,7 @@ function writeNFC(data) {
 
 function pollNFC() {
     $.getJSON('json/readnfc', function (data) {
-
-        var nfcStatus = $('#nfcStatusBox');
-
-        nfcStatus.empty();
-
-        $('<p/>')
-            .text('NFC Tag Status: ' + data['description'] + ' (UID: ' + data['uid'] + ', data: ' + data['data'] + ')')
-            .appendTo(nfcStatus);
+        $('#nfcStatusBox').html('<span title="UID: ' + data['uid'] + ', data: ' + data['data'] + '">' + data['description'] + '</span>');
 
         // poll again in 1 sec
         setTimeout(pollNFC, 1000);
