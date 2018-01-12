@@ -113,9 +113,6 @@ function deleteFile(name, data) {
 function pollNFC() {
     $.getJSON('json/readnfc', function (data) {
         $('#nfcStatusBox').html('<span title="UID: ' + data['uid'] + ', data: ' + data['data'] + '">' + data['description'] + '</span>');
-
-        // poll again in 1 sec
-        setTimeout(pollNFC, 1000);
     });
 }
 
@@ -130,9 +127,14 @@ function pollWlanTimeout() {
 }
 
 function initialize() {
+    // fill music file list
     refreshMusicFiles();
-    pollNFC();
 
+    // start polling nfc
+    pollNFC();
+    setInterval(pollNFC, 1000);
+
+    // start polling WLAN timeout
     pollWlanTimeout();
     setInterval(pollWlanTimeout, 1000);
 }
