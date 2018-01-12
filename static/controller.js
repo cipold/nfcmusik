@@ -75,6 +75,11 @@ function writeNFC(data) {
             $('#modal-dialog').modal('show');
             console.error(ret.message);
         }
+    }).fail(function () {
+        var err = 'Request Failed';
+        $('#modal-text').text(err);
+        $('#modal-dialog').modal('show');
+        console.error(err);
     });
 }
 
@@ -106,6 +111,11 @@ function deleteFile(name, data) {
                 $('#modal-dialog').modal('show');
                 console.error(ret.message);
             }
+        }).fail(function () {
+            var err = 'Request Failed';
+            $('#modal-text').text(err);
+            $('#modal-dialog').modal('show');
+            console.error(err);
         });
     }
 }
