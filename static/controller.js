@@ -21,6 +21,15 @@ function refreshMusicFiles() {
                 })
                 .html('<span class="glyphicon glyphicon-save" aria-hidden="true"></span> Write')
                 .appendTo(li);
+
+            $('<button/>')
+                .attr('type', 'button')
+                .addClass("btn btn-danger")
+                .click(function () {
+                    deleteFile(f.name, f.hash);
+                })
+                .html('<span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete')
+                .appendTo(li);
         });
 
         $('#musicFiles').html(ul);
@@ -67,6 +76,38 @@ function writeNFC(data) {
             console.error(ret.message);
         }
     });
+}
+
+function deleteFile(name, data) {
+    if (confirm('Do you really want to delete "' + name + '"?')) {
+        $.getJSON('actions/deletefile?data=' + data, function (ret) {
+            if (ret.success) {
+                // the file was successfully deleted - refresh the file list
+                refreshMusicFiles();
+                console.info(ret.message);
+            } else {
+                // there was an issue deleting the file - provide status message to user
+                var icon = $('#' + data + ' > .btn > .glyphicon').first();
+                var btn = $('#' + data + ' > .btn').first();
+
+                icon.removeClass('glyphicon-save');
+                icon.addClass('glyphicon-exclamation-sign');
+                btn.removeClass('btn-primary');
+                btn.addClass('btn-danger');
+
+                setTimeout(function () {
+                    icon.removeClass('glyphicon-exclamation-sign');
+                    icon.addClass('glyphicon-save');
+                    btn.removeClass('btn-danger');
+                    btn.addClass('btn-primary');
+                }, 3000);
+
+                $('#modal-text').text(ret.message);
+                $('#modal-dialog').modal('show');
+                console.error(ret.message);
+            }
+        });
+    }
 }
 
 function pollNFC() {

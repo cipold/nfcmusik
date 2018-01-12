@@ -140,6 +140,36 @@ def write_nfc():
     ))
 
 
+@app.route("/actions/deletefile")
+def delete_file():
+    """
+    Delete file
+
+    Data is contained in get argument 'data'.
+    """
+    # acquire data in hex format
+    hex_data = request.args.get('data')
+    if hex_data is None:
+        return json.dumps(dict(
+            success=False, message='No data argument given for deletefile endpoint'
+        ))
+
+    # convert from hex to bytes
+    data = binascii.a2b_hex(hex_data)
+
+    if data not in music_files_dict:
+        return json.dumps(dict(success=False, message="Unknown hash value!"))
+
+    file_name = music_files_dict[data]
+
+    try:
+        os.remove(os.path.join(settings.MUSIC_ROOT, file_name))
+    except OSError as e:
+        return json.dumps(dict(success=False, message="Could not delete file: %s" % e))
+
+    return json.dumps(dict(success=True, message='The file "%s" was deleted' % file_name))
+
+
 def handle_file_upload(files):
     if 'file' not in files:
         flash('No file uploaded', 'danger')
