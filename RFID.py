@@ -348,3 +348,4 @@ class RFID:
             self.stop_crypto()
         GPIO.cleanup()
         SPI.closeSPI()
+
